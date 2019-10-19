@@ -3,6 +3,27 @@ use std::env;
 use futures::StreamExt;
 use telegram_bot::*;
 
+
+async fn geteth_message(api: Api, message: Message) -> Result<(), Error> {
+    api.send(message.text_reply("Simple message")).await?;
+
+    Ok(())
+}
+
+
+async fn get_tracking(api: Api, message: Message) -> Result<(), Error> {
+    match message.kind {
+        MessageKind::Text { ref data, .. } => match data.as_str() {
+            "/geteth" => geteth_message(api, message).await?,
+            _ => (),
+        },
+        _ => (),
+    };
+
+    Ok(())
+}
+
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let token = env::var("TELEGRAM_BOT_TOKEN").expect("TELEGRAM_BOT_TOKEN not set");
@@ -14,17 +35,7 @@ async fn main() -> Result<(), Error> {
         // If the received update contains a new message...
         let update = update?;
         if let UpdateKind::Message(message) = update.kind {
-            if let MessageKind::Text { ref data, .. } = message.kind {
-                // Print received text message to stdout.
-                println!("<{}>: {}", &message.from.first_name, data);
-
-                // Answer message with "Hi".
-                api.send(message.text_reply(format!(
-                    "Hi, {}! You just wrote '{}'",
-                    &message.from.first_name, data
-                )))
-                .await?;
-            }
+            get_tracking(api.clone(), message).await?;
         }
     }
     Ok(())
