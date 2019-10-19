@@ -3,9 +3,10 @@ use std::env;
 use futures::StreamExt;
 use telegram_bot::*;
 
+mod geteth;
 
 async fn geteth_message(api: Api, message: Message) -> Result<(), Error> {
-    api.send(message.text_reply("Simple message")).await?;
+    api.send(message.text_reply(geteth::geteth_message())).await?;
 
     Ok(())
 }
