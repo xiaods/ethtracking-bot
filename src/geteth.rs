@@ -59,3 +59,12 @@ struct Value {
                                 ticker.values.priceUSD);
     return eth_message_str;
     }
+
+    pub fn geteth_ts() -> u32 {
+        let request_url = format!("https://tokenview.com/v9api/getResistenceAndSupportValue?coin={coin}&exchange=huobipro&stgy=001",
+                              coin = "eth");
+        let mut response = reqwest::get(&request_url).unwrap();
+        let ticker: Ticker = response.json().unwrap();
+        let d = ticker.values.timestamp;
+        return d;
+    }
