@@ -35,27 +35,27 @@ async fn main() -> Result<(), Error> {
 
     // Fetch new updates via long poll method
     let mut stream = api.stream();
+    let mut cur_d = geteth::geteth_ts();
     while let Some(update) = stream.next().await {
         // If the received update contains a new message...
         let update = update?;
         if let UpdateKind::Message(message) = update.kind {
             get_tracking(api.clone(), message).await?;
         }
-    }
 
-    let cur_d = geteth::geteth_ts();
-    loop {
-        let when = tokio::clock::now() + Duration::from_millis(2000);
-        delay(when).await;
-        let new_d = geteth::geteth_ts();
-        let chat = ChatId::new(61031);
-        // get new ticker from source
-        if new_d != cur_d {
-            api.spawn(chat.text(geteth::geteth_message()));
-        } else {
-            api.spawn(chat.text("PING ME by every 2 seconds"));
+        loop {
+            let when = tokio::clock::now() + Duration::from_millis(2000);
+            delay(when).await;
+            let new_d = geteth::geteth_ts();
+            let chat = ChatId::new(61031);
+            // get new ticker from source
+            if new_d != cur_d {
+                api.spawn(chat.text(geteth::geteth_message()));
+                cur_d = new_d;
+            } else {
+                api.spawn(chat.text("PING ME by every 2 seconds"));
+            }
         }
     }
-
     Ok(())
 }
