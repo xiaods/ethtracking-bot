@@ -3,6 +3,7 @@ use std::env;
 use futures::StreamExt;
 use telegram_bot::*;
 mod geteth;
+mod getbtc;
 
 use tokio::timer::delay;
 use std::time::Duration;
