@@ -48,8 +48,8 @@ struct Value {
     let timestamp_str = fixed_dt.format("%Y-%m-%d %H:%M:%S").to_string();
 
     let eth_status_str: &str = match ticker.values.status {
-        0 => "Buy BTC",
-        1 => "Sell BTC",
+        0 => "Sell BTC",
+        1 => "Buy BTC",
         _ => "Unknown",
     };
 
