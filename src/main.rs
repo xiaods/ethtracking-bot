@@ -14,11 +14,18 @@ async fn geteth_message(api: Api, message: Message) -> Result<(), Error> {
     Ok(())
 }
 
+async fn getbtc_message(api: Api, message: Message) -> Result<(), Error> {
+    api.send(message.text_reply(getbtc::getbtc_message())).await?;
+
+    Ok(())
+}
+
 
 async fn get_tracking(api: Api, message: Message) -> Result<(), Error> {
     match message.kind {
         MessageKind::Text { ref data, .. } => match data.as_str() {
             "/geteth" => geteth_message(api, message).await?,
+            "/getbtc" => getbtc_message(api, message).await?,
             _ => (),
         },
         _ => (),
@@ -40,6 +47,7 @@ async fn main() -> Result<(), Error> {
     while let Some(update) = stream.next().await {
         // If the received update contains a new message...
         let update = update?;
+        println!("{:?}", update);
         if let UpdateKind::Message(message) = update.kind {
             get_tracking(api.clone(), message).await?;
         }
